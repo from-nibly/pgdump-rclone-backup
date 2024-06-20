@@ -10,7 +10,7 @@ This is a simple docker image to backup postgres databases. It uses pg_dump to b
    git clone
    ```
 
-2. Configure rclone. You can follow the instructions [here](https://rclone.org/drive/).
+2. Configure rclone. You can follow the instructions [here](https://rclone.org/drive/). When you configure rclone, use `db-backups` as the remote name. If you want to use a different name, you need to update backup.sh file and environment variables like `RCLONE_CONFIG_YOUR_NAME_TYPE` in the `.env` file.
 
 3. Build the image
 
@@ -21,14 +21,18 @@ This is a simple docker image to backup postgres databases. It uses pg_dump to b
 4. Create a `.env` file with the following environment variables.
 
    ```bash
-   PGPASSWORD=postgres
-   PGDATABASE=postgres
-   PGHOST=host.docker.internal
-   PGPORT=5432
-   PGUSER=postgres
-   GDRIVE_CLIENT_ID=
-   GDRIVE_CLIENT_SECRET=
-   GDRIVE_TOKEN=
+   PGPASSWORD=
+   PGUSER=
+   PGHOST=
+   PGPORT=
+   PGDATABASE=
+
+   RCLONE_REMOTE_PATH= # Folder/filepath You want to save the backups in google drive
+   RCLONE_CONFIG_DB_BACKUPS_TYPE=
+   RCLONE_CONFIG_DB_BACKUPS_CLIENT_ID=
+   RCLONE_CONFIG_DB_BACKUPS_CLIENT_SECRET=
+   RCLONE_CONFIG_DB_BACKUPS_SCOPE=
+   RCLONE_CONFIG_DB_BACKUPS_TOKEN=
    ```
 
 5. Run the image with environment variables

@@ -12,7 +12,6 @@ RUN curl https://rclone.org/install.sh | bash
 
 # Copy the backup script into the image
 COPY backup_pg.sh /backup_pg.sh
-COPY rclone.conf /root/.config/rclone/rclone.conf
 
 ENV TZ='Asia/Kolkata' 
 
