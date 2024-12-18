@@ -86,8 +86,29 @@ for DATABASE in "${DATABASES[@]}"; do
     # Set the backup file name for the current database
     BACKUP_FILE="$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
 
-    # Perform the pg_dump for the current database
-    PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT --disable-triggers $DATABASE | gzip > $BACKUP_FILE
+    # Perform the pg_dump for the current database in correct order
+    BACKUP_DIR_DB="$BACKUP_DIR/${DATE}/${DATABASE}"
+    mkdir -p "$BACKUP_DIR_DB"
+
+    # Dump pre-data (schemas, types, etc.)
+    PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT \
+        --clean --if-exists --create --no-owner \
+        --section=pre-data \
+        $DATABASE | gzip > "$BACKUP_DIR_DB/01_pre_data.sql.gz"
+
+    # Dump data (actual table contents)
+    PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT \
+        --column-inserts --rows-per-insert=5000 \
+        --section=data \
+        $DATABASE | gzip > "$BACKUP_DIR_DB/02_data.sql.gz"
+
+    # Dump post-data (constraints, indexes, triggers)
+    PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT \
+        --section=post-data \
+        $DATABASE | gzip > "$BACKUP_DIR_DB/03_post_data.sql.gz"
+
+    # Combine all files
+    cat "$BACKUP_DIR_DB/01_pre_data.sql.gz" "$BACKUP_DIR_DB/02_data.sql.gz" "$BACKUP_DIR_DB/03_post_data.sql.gz" > "$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
 
     # Check if the dump was successful
     if [ $? -eq 0 ]; then

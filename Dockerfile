@@ -1,11 +1,12 @@
 # Use the official PostgreSQL image from the Docker Hub
-FROM postgres:latest
+FROM --platform=linux/amd64 postgres:15-alpine
 
-# Install curl and cron (if needed)
-RUN apt-get update && apt-get install -y \
+# Install required tools
+RUN apk add --no-cache \
     curl \
     unzip \
-    && rm -rf /var/lib/apt/lists/*
+    gzip \
+    bash
 
 # Install rclone
 RUN curl https://rclone.org/install.sh | bash

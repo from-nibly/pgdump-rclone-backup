@@ -2,3 +2,4 @@ README.md
 .env
 .gitignore
 rclone.conf
+build-and-push.sh
