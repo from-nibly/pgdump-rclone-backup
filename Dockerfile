@@ -14,7 +14,7 @@ RUN curl https://rclone.org/install.sh | bash
 # Copy the backup script into the image
 COPY backup_pg.sh /backup_pg.sh
 
-ENV TZ='Asia/Kolkata' 
+ENV TZ='America/Denver' 
 
 # Make the backup script executable
 RUN chmod +x /backup_pg.sh

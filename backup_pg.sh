@@ -42,38 +42,6 @@ if [ -z "$RCLONE_REMOTE_PATH" ]; then
   exit 1
 fi
 
-if [ -z "$RCLONE_CONFIG_DB_BACKUPS_TYPE" ]; then
-  echo "The RCLONE_CONFIG_DB_BACKUPS_TYPE environment variable is not set. Exiting..."
-  exit 1
-fi
-
-if [ -z "$RCLONE_CONFIG_DB_BACKUPS_CLIENT_ID" ]; then
-  echo "The RCLONE_CONFIG_DB_BACKUPS_CLIENT_ID environment variable is not set. Exiting..."
-  exit 1
-fi
-
-if [ -z "$RCLONE_CONFIG_DB_BACKUPS_CLIENT_SECRET" ]; then
-  echo "The RCLONE_CONFIG_DB_BACKUPS_CLIENT_SECRET environment variable is not set. Exiting..."
-  exit 1
-fi
-
-if [ -z "$RCLONE_CONFIG_DB_BACKUPS_SCOPE" ]; then
-  echo "The RCLONE_CONFIG_DB_BACKUPS_SCOPE environment variable is not set. Exiting..."
-  exit 1
-fi
-
-if [ -z "$RCLONE_CONFIG_DB_BACKUPS_TOKEN" ]; then
-  echo "The RCLONE_CONFIG_DB_BACKUPS_TOKEN environment variable is not set. Exiting..."
-  exit 1
-fi
-
-export RCLONE_CONFIG_DB_BACKUPS_TYPE=$RCLONE_CONFIG_DB_BACKUPS_TYPE
-export RCLONE_CONFIG_DB_BACKUPS_CLIENT_ID=$RCLONE_CONFIG_DB_BACKUPS_CLIENT_ID
-export RCLONE_CONFIG_DB_BACKUPS_CLIENT_SECRET=$RCLONE_CONFIG_DB_BACKUPS_CLIENT_SECRET
-export RCLONE_CONFIG_DB_BACKUPS_SCOPE=$RCLONE_CONFIG_DB_BACKUPS_SCOPE
-export RCLONE_CONFIG_DB_BACKUPS_TOKEN=$RCLONE_CONFIG_DB_BACKUPS_TOKEN
-export RCLONE_CONFIG_DB_BACKUPS_TEAM_DRIVE=
-
 
 # Split the PGDATABASE variable into an array using comma as the delimiter
 IFS=',' read -ra DATABASES <<< "$PGDATABASE"
@@ -108,7 +76,7 @@ for DATABASE in "${DATABASES[@]}"; do
         $DATABASE | gzip > "$BACKUP_DIR_DB/03_post_data.sql.gz"
 
     # Combine all files
-    cat "$BACKUP_DIR_DB/01_pre_data.sql.gz" "$BACKUP_DIR_DB/02_data.sql.gz" "$BACKUP_DIR_DB/03_post_data.sql.gz" > "$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
+    cp "$BACKUP_DIR_DB/*.sql.gz" "$BACKUP_DIR_DB/02_data.sql.gz" "$BACKUP_DIR_DB/03_post_data.sql.gz" > "$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
 
     # Check if the dump was successful
     if [ $? -eq 0 ]; then
@@ -120,7 +88,7 @@ for DATABASE in "${DATABASES[@]}"; do
 done
 
 # Upload the backup files to Google Drive using rclone
-rclone copy $BACKUP_DIR db_backups:$RCLONE_REMOTE_PATH
+rclone --config=/config/rclone.conf copy $BACKUP_DIR minio:db-backups.davidson.house/$RCLONE_REMOTE_PATH
 
 # Check if the upload was successful
 if [ $? -eq 0 ]; then
