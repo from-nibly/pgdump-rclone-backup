@@ -88,7 +88,7 @@ for DATABASE in "${DATABASES[@]}"; do
 done
 
 # Upload the backup files to Google Drive using rclone
-rclone --config=/config/rclone.conf copy $BACKUP_DIR minio:db-backups.davidson.house/$RCLONE_REMOTE_PATH
+rclone --config=/config/rclone.conf -v copy $BACKUP_DIR minio:db-backups.davidson.house/$RCLONE_REMOTE_PATH
 
 # Check if the upload was successful
 if [ $? -eq 0 ]; then
