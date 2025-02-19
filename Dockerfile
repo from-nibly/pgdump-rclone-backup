@@ -1,5 +1,5 @@
 # Use the official PostgreSQL image from the Docker Hub
-FROM --platform=linux/amd64 postgres:15-alpine
+FROM --platform=linux/amd64 postgres:16-alpine
 
 # Install required tools
 RUN apk add --no-cache \
