@@ -43,6 +43,9 @@ IFS=',' read -ra DATABASES <<< "$PGDATABASE"
 
 # Loop through the databases
 for DATABASE in "${DATABASES[@]}"; do
+    
+    echo "backing up ${DATABASE}"
+    
      # Create the directory for the current database if it doesn't exist
     mkdir -p "$BACKUP_DIR/${DATE}"
 
