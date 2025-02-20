@@ -45,7 +45,7 @@ IFS=',' read -ra DATABASES <<< "$PGDATABASE"
 for DATABASE in "${DATABASES[@]}"; do
     
     echo "backing up ${DATABASE}"
-    
+
      # Create the directory for the current database if it doesn't exist
     mkdir -p "$BACKUP_DIR/${DATE}"
 
@@ -100,16 +100,6 @@ else
   exit 1
 fi
 
-# Cleanup the backup directory
-rm -rf $BACKUP_DIR
-
-# Check if the cleanup was successful
-if [ $? -eq 0 ]; then
-  echo "Cleanup successful"
-else
-  echo "Cleanup failed"
-  exit 1
-fi
 
 # Ending Message
 echo "Backup and upload completed successfully"
