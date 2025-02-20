@@ -76,8 +76,6 @@ for DATABASE in "${DATABASES[@]}"; do
         --section=post-data \
         $DATABASE | gzip > "$BACKUP_DIR_DB/03_post_data.sql.gz"
 
-    echo "combining files"
-
     # Check if the dump was successful
     if [ $? -eq 0 ]; then
       echo "Backup successful: $BACKUP_FILE"
