@@ -79,7 +79,7 @@ for DATABASE in "${DATABASES[@]}"; do
     echo "combining files"
 
     # Combine all files
-    cp "$BACKUP_DIR_DB/*.sql.gz" "$BACKUP_DIR_DB/02_data.sql.gz" "$BACKUP_DIR_DB/03_post_data.sql.gz" > "$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
+    cat "$BACKUP_DIR_DB/*.sql.gz" "$BACKUP_DIR_DB/02_data.sql.gz" "$BACKUP_DIR_DB/03_post_data.sql.gz" > "$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
 
     # Check if the dump was successful
     if [ $? -eq 0 ]; then
