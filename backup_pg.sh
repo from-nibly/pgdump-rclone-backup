@@ -53,11 +53,15 @@ for DATABASE in "${DATABASES[@]}"; do
     BACKUP_DIR_DB="$BACKUP_DIR/${DATE}/${DATABASE}"
     mkdir -p "$BACKUP_DIR_DB"
 
+    echo "dumping pre-data"
+
     # Dump pre-data (schemas, types, etc.)
     PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT \
         --clean --if-exists --create --no-owner \
         --section=pre-data \
         $DATABASE | gzip > "$BACKUP_DIR_DB/01_pre_data.sql.gz"
+
+    echo "dumping actual table contents"
 
     # Dump data (actual table contents)
     PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT \
@@ -65,10 +69,14 @@ for DATABASE in "${DATABASES[@]}"; do
         --section=data \
         $DATABASE | gzip > "$BACKUP_DIR_DB/02_data.sql.gz"
 
+    echo "dumping post-data"
+
     # Dump post-data (constraints, indexes, triggers)
     PGPASSWORD=$PGPASSWORD pg_dump -U $PGUSER -h $PGHOST -p $PGPORT \
         --section=post-data \
         $DATABASE | gzip > "$BACKUP_DIR_DB/03_post_data.sql.gz"
+
+    echo "combining files"
 
     # Combine all files
     cp "$BACKUP_DIR_DB/*.sql.gz" "$BACKUP_DIR_DB/02_data.sql.gz" "$BACKUP_DIR_DB/03_post_data.sql.gz" > "$BACKUP_DIR/${DATE}/${DATABASE}.sql.gz"
@@ -82,6 +90,7 @@ for DATABASE in "${DATABASES[@]}"; do
     fi
 done
 
+echo "Uploading to minio"
 # Upload the backup files to Google Drive using rclone
 rclone --config=/config/rclone.conf -v copy $BACKUP_DIR minio:db-backups.davidson.house
 
